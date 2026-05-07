@@ -1,0 +1,76 @@
+<div style="padding: 20px;">
+  <h1>📡 Eventos en tiempo real con SSE</h1>
+  
+  <!-- Formulario para agregar nuevo registro -->
+  <div style="background: #e3f2fd; padding: 20px; margin: 20px 0; border-radius: 10px;">
+    <h3>➕ Agregar nuevo amigo</h3>
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <input 
+        [(ngModel)]="nuevoNombre" 
+        placeholder="Nombre" 
+        style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; flex: 1; min-width: 150px;">
+      <select 
+        [(ngModel)]="nuevoGenero" 
+        style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <button 
+        (click)="agregarAmigo()" 
+        style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        ➕ Agregar
+      </button>
+    </div>
+  </div>
+  
+  <!-- Botón de acción -->
+  <div style="display: flex; gap: 10px; margin: 20px 0;">
+    <button (click)="limpiarLogs()" style="padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      🗑️ Limpiar eventos
+    </button>
+  </div>
+  
+  <div style="background: #4caf50; color: white; padding: 15px; margin: 10px 0; border-radius: 8px;">
+    ✅ <strong>Sistema funcionando correctamente</strong>
+  </div>
+  
+  <div style="margin: 20px 0;">
+    <strong>📊 Cambios recibidos: {{ logs.length }}</strong>
+  </div>
+  
+  <!-- Mostrar eventos (INSERT y UPDATE) -->
+  <div *ngFor="let log of logs; let i = index" style="border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px;">
+    <div><strong>#{{ i + 1 }} - Cambio en tiempo real</strong></div>
+    
+    <!-- Mostrar tipo de operación -->
+    <div *ngIf="log.operation === 'INSERT'" style="color: blue; margin-bottom: 10px;">
+      🆕 <strong>Nuevo registro agregado</strong>
+    </div>
+    <div *ngIf="log.operation === 'UPDATE'" style="color: orange; margin-bottom: 10px;">
+      ✏️ <strong>Registro actualizado</strong>
+    </div>
+    <div *ngIf="!log.operation" style="color: gray; margin-bottom: 10px;">
+      📌 <strong>Cambio detectado</strong>
+    </div>
+    
+    <!-- Mostrar valor anterior (solo para UPDATE) -->
+    <div *ngIf="log.old_name">
+      📛 <strong>Valor anterior:</strong> <span style="color: red;">{{ log.old_name }}</span>
+    </div>
+    <div *ngIf="!log.old_name && log.operation === 'INSERT'">
+      📛 <strong>Valor anterior:</strong> <span style="color: gray;">(Nuevo registro)</span>
+    </div>
+    
+    <!-- Mostrar valor nuevo -->
+    <div>✨ <strong>Valor nuevo:</strong> <span style="color: green; font-weight: bold;">{{ log.new_name || log.name }}</span></div>
+    <div>🚻 <strong>Género:</strong> {{ log.gender }}</div>
+    <div>📋 <strong>Tabla:</strong> {{ log.table_name }}</div>
+    <div>📅 <strong>Fecha:</strong> {{ log.changed_at | date:'medium' }}</div>
+  </div>
+  
+  <div *ngIf="logs.length === 0" style="text-align: center; padding: 50px; background: #f0f0f0; border-radius: 10px;">
+    <div>⏳ Esperando cambios en la base de datos...</div>
+    <small>Agrega un amigo desde el formulario o ejecuta un UPDATE en PostgreSQL</small>
+  </div>
+</div>
